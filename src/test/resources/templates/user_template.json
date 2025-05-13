@@ -1,0 +1,6 @@
+{
+  "name": "{{name}}",
+  "gender": "{{gender}}",
+  "email": "{{email}}",
+  "status": "{{status}}"
+}

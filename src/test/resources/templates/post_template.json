@@ -1,0 +1,5 @@
+{
+  "title": "{{title}}",
+  "body": "{{body}}",
+  "user_id": "{{user_id}}"
+}
