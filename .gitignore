@@ -36,3 +36,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# === Custom API test config ===
+src/test/resources/config.properties
