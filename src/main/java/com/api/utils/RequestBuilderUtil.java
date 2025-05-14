@@ -9,6 +9,7 @@ import com.api.constants.HttpMethod;
 public class RequestBuilderUtil {
 
     public static HttpRequest createRequest(String path, String body, HttpMethod method, String token) {
+
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                 .uri(URI.create(ApiConstants.BASE_URL + path))
                 .header("Content-Type", "application/json")

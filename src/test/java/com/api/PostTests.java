@@ -17,6 +17,7 @@ public class PostTests {
 
     @Test
     public void createValidPostTest() {
+
         UserService userService = new UserService();
         int userId = userService.createUserAndReturnId();
         String postTemplate = TemplateUtils.loadTemplate(JsonConstant.POST_TEMPLATE_PATH);

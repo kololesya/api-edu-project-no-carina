@@ -6,6 +6,7 @@ import java.util.Map;
 import com.api.config.TestDataConfig;
 
 public class UserFactory {
+
     public static Map<String, String> createDefaultUserData() {
         Map<String, String> data = new HashMap<>();
         data.put("name", TestDataConfig.get("user.name"));

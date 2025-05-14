@@ -32,4 +32,5 @@ public class PostService {
             throw new RuntimeException(e);
         }
     }
+
 }

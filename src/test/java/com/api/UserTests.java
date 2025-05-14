@@ -16,6 +16,7 @@ public class UserTests {
 
     @Test
     public void createValidUserTest() {
+
         Map<String, String> userData = UserFactory.createDefaultUserData();
         String template = TemplateUtils.loadTemplate(JsonConstant.USER_TEMPLATE_PATH);
         String requestBody = TemplateUtils.populateTemplate(template, userData);
