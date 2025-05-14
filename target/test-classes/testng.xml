@@ -4,6 +4,7 @@
     <test name="Users API">
         <classes>
             <class name="com.api.UserTests"/>
+            <class name="com.api.PostTests"/>
         </classes>
     </test>
 </suite>

@@ -57,6 +57,65 @@ public class UserService {
         return send(request);
     }
 
+    public HttpResponse<String> getAllUsers() {
+        HttpRequest request = RequestBuilderUtil.createRequest(
+                "users",
+                null,
+                HttpMethod.GET,
+                ApiConstants.BEARER_TOKEN
+        );
+        try {
+            HttpResponse<String> response = HttpClient.newHttpClient()
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+            LoggingUtils.logRequestAndResponse(
+                    LOGGER,
+                    "GET",
+                    request.uri().toString(),
+                    null,
+                    response
+            );
+            return response;
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error("GET /users failed: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public HttpResponse<String> updateUser(int userId, String body) {
+        HttpRequest request = RequestBuilderUtil.createRequest(
+                "users/" + userId,
+                body,
+                HttpMethod.PUT,
+                ApiConstants.BEARER_TOKEN
+        );
+
+        try {
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            LoggingUtils.logRequestAndResponse(LOGGER, "PUT", ApiConstants.BASE_URL + "users/" + userId, body, response);
+            return response;
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error("Request failed: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public HttpResponse<String> deleteUser(int userId) {
+        HttpRequest request = RequestBuilderUtil.createRequest(
+                "users/" + userId,
+                null,
+                HttpMethod.DELETE,
+                ApiConstants.BEARER_TOKEN
+        );
+        try {
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+            LoggingUtils.logRequestAndResponse(LOGGER, "DELETE", ApiConstants.BASE_URL + "users/" + userId, null, response);
+            return response;
+        } catch (IOException | InterruptedException e) {
+            LOGGER.error("Request failed: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
     private HttpResponse<String> send(HttpRequest request) {
         try {
             return HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());

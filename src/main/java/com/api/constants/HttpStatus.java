@@ -8,6 +8,7 @@ public enum HttpStatus {
     BAD_REQUEST(400),
     UNAUTHORIZED(401),
     NOT_FOUND(404),
+    UNPROCESSABLE_ENTITY(422),
     INTERNAL_SERVER_ERROR(500);
 
     private final int code;
