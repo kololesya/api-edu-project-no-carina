@@ -1,0 +1,7 @@
+mutation deleteUser($input: deleteUserInput!) {
+    deleteUser(input: $input) {
+        user {
+            id
+        }
+    }
+}
