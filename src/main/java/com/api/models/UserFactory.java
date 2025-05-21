@@ -15,4 +15,13 @@ public class UserFactory {
         data.put("status", TestDataConfig.get("user.status"));
         return data;
     }
+
+    public static Map<String, String> createInvalidUserData() {
+        Map<String, String> data = new HashMap<>();
+        data.put("name", "Invalid User");
+        data.put("gender", "invalid_gender");
+        data.put("email", "invalid-email-format");
+        data.put("status", "not_a_status");
+        return data;
+    }
 }
