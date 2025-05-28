@@ -11,8 +11,4 @@ public class LoggingUtils {
         logger.info("Request body: {}", body);
         logger.info("Status: {}, Response: {}", response.statusCode(), response.body());
     }
-
-    public static Logger getLogger(Class<?> clazz) {
-        return org.slf4j.LoggerFactory.getLogger(clazz);
-    }
 }
