@@ -8,29 +8,28 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import com.api.constants.HttpStatus;
 
-import static com.api.Utils.ResponseAssertUtils.assertUserFieldsPresent;
+import static com.api.Utils.ResponseAssertUtils.assertAllUsersContainRequiredFields;
+import static com.api.Utils.ResponseAssertUtils.assertUserDataMatches;
 import static com.api.constants.TestDataConstants.NON_EXISTENT_USER_ID;
-import static com.api.helpers.UserTestHelper.createUserAndGetId;
-import static com.api.models.UserFactory.createDefaultUserData;
-import static com.api.utils.RequestBodyBuilderUtil.*;
+import static com.api.models.UserFactory.createDefaultUserDataWithRandomEmail;
+import static com.api.models.UserFactory.createInvalidUserData;
+import static com.api.utils.RequestBodyBuilderUtil.buildUserRequestBody;
+import static com.api.utils.RequestBodyBuilderUtil.buildUpdatedUserRequestBody;
 
 public class UserTests extends BaseApiTest {
 
     @DataProvider(name = "userCreationData")
     public static Object[][] userCreationData() {
         return new Object[][]{
-                {"Valid user", buildDefaultUserRequestBody(), HttpStatus.CREATED.getCode()},
-                {"Invalid user", buildInvalidUserRequestBody(), HttpStatus.UNPROCESSABLE_ENTITY.getCode()},
-                {"Duplicate email", buildDefaultUserRequestBody(), HttpStatus.UNPROCESSABLE_ENTITY.getCode()},
-                {"Empty body", "{}", HttpStatus.UNPROCESSABLE_ENTITY.getCode()}
+                {"Valid user", createDefaultUserDataWithRandomEmail(), HttpStatus.CREATED.getCode()},
+                {"Invalid user", createInvalidUserData(), HttpStatus.UNPROCESSABLE_ENTITY.getCode()},
+                {"Empty body", null, HttpStatus.UNPROCESSABLE_ENTITY.getCode()}
         };
     }
 
     @Test(dataProvider = "userCreationData")
-    public void createUserTest(String description, String requestBody, int expectedStatusCode) {
-        if ("Duplicate email".equals(description)) {
-            userService.createUser(requestBody);
-        }
+    public void createUserTest(String description, Map<String, String> userData, int expectedStatusCode) {
+        String requestBody = userData != null ? buildUserRequestBody(userData) : "{}";
         HttpResponse<String> response = userService.createUser(requestBody);
         Assert.assertEquals(response.statusCode(), expectedStatusCode,
                 "Expected status " + expectedStatusCode + " for case: " + description);
@@ -38,20 +37,29 @@ public class UserTests extends BaseApiTest {
             Assert.assertTrue(response.body().contains("email") || response.body().contains("name") || response.body().contains("gender"),
                     "Expected validation errors in response for: " + description);
         }
-        if (expectedStatusCode == HttpStatus.OK.getCode() || expectedStatusCode == HttpStatus.CREATED.getCode()) {
-            assertUserFieldsPresent(response.body());
+        if (expectedStatusCode == HttpStatus.CREATED.getCode()) {
+            assertUserDataMatches(response.body(), userData);
         }
     }
 
     @Test
+    public void duplicateEmailUserTest() {
+        String body = buildUserRequestBody(createDefaultUserDataWithRandomEmail());
+        HttpResponse<String> response1 = userService.createUser(body);
+        Assert.assertEquals(response1.statusCode(), HttpStatus.CREATED.getCode(), "First user creation failed");
+        HttpResponse<String> response2 = userService.createUser(body);
+        Assert.assertEquals(response2.statusCode(), HttpStatus.UNPROCESSABLE_ENTITY.getCode(), "Duplicate email should not be allowed");
+    }
+
+    @Test
     public void updateExistingUserTest() {
-        Map<String, String> originalUserData = createDefaultUserData();
-        int userId = createUserAndGetId(userService);
+        Map<String, String> originalUserData = createDefaultUserDataWithRandomEmail();
+        int userId = userService.createUserAndReturnId(originalUserData);
         String updatedRequestBody = buildUpdatedUserRequestBody(originalUserData, "Updated Name", "inactive");
         HttpResponse<String> updateResponse = userService.updateUser(userId, updatedRequestBody);
         Assert.assertEquals(updateResponse.statusCode(), HttpStatus.OK.getCode(), "Expected status 200 when updating a user");
         String responseBody = updateResponse.body();
-        assertUserFieldsPresent(responseBody);
+        assertUserDataMatches(responseBody, originalUserData);
     }
 
     @Test
@@ -59,12 +67,13 @@ public class UserTests extends BaseApiTest {
         HttpResponse<String> response = userService.getAllUsers();
         Assert.assertEquals(response.statusCode(), HttpStatus.OK.getCode(), "Expected status 200 when retrieving all users");
         String responseBody = response.body();
-        assertUserFieldsPresent(responseBody);
+        assertAllUsersContainRequiredFields(responseBody);
     }
 
     @Test
     public void deleteUserTest() {
-        int userId = createUserAndGetId(userService);
+        Map<String, String> originalUserData = createDefaultUserDataWithRandomEmail();
+        int userId = userService.createUserAndReturnId(originalUserData);
         HttpResponse<String> deleteResponse = userService.deleteUser(userId);
         Assert.assertEquals(deleteResponse.statusCode(), HttpStatus.NO_CONTENT.getCode(), "Expected status 204 when deleting a user");
         HttpResponse<String> getResponse = userService.getUserById(userId);
@@ -73,17 +82,18 @@ public class UserTests extends BaseApiTest {
 
     @Test
     public void getUserByIdTest() {
-        int userId = createUserAndGetId(userService);
+        Map<String, String> originalUserData = createDefaultUserDataWithRandomEmail();
+        int userId = userService.createUserAndReturnId(originalUserData);
         HttpResponse<String> getResponse = userService.getUserById(userId);
         Assert.assertEquals(getResponse.statusCode(), HttpStatus.OK.getCode(), "Expected status 200 when retrieving a user by ID");
         String responseBody = getResponse.body();
-        Assert.assertTrue(responseBody.contains("\"id\":" + userId), "Response does not contain correct 'id'");
-        assertUserFieldsPresent(responseBody);
+        assertUserDataMatches(responseBody, originalUserData);
     }
 
     @Test
-    public void deleteNonExistUserTest () {
-        int userId = createUserAndGetId(userService);
+    public void deleteNonExistUserTest() {
+        Map<String, String> originalUserData = createDefaultUserDataWithRandomEmail();
+        int userId = userService.createUserAndReturnId(originalUserData);
         HttpResponse<String> deleteResponse = userService.deleteUser(userId);
         Assert.assertEquals(deleteResponse.statusCode(), HttpStatus.NO_CONTENT.getCode(), "Expected status 204 when deleting user");
         HttpResponse<String> getResponse = userService.getUserById(userId);

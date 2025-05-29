@@ -1,19 +1,21 @@
 package com.api.services;
 
-import com.api.constants.ApiConstants;
-import com.api.constants.HttpMethod;
-import com.api.utils.LoggingUtils;
-import com.api.utils.RequestBodyBuilderUtil;
-import com.api.utils.RequestBuilderUtil;
-import com.jayway.jsonpath.JsonPath;
-
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpClient;
 import java.io.IOException;
+import java.util.Map;
+
+import com.api.constants.ApiConstants;
+import com.api.constants.HttpMethod;
+import com.api.utils.RequestBodyBuilderUtil;
+import com.api.utils.RequestBuilderUtil;
+import com.jayway.jsonpath.JsonPath;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.api.constants.JsonPathConstants.USER_ID;
 
 public class UserService {
 
@@ -23,10 +25,10 @@ public class UserService {
         return sendRequest("users", body, HttpMethod.POST);
     }
 
-    public int createUserAndReturnId() {
-        String requestBody = RequestBodyBuilderUtil.buildDefaultUserRequestBody();
+    public int createUserAndReturnId(Map<String, String> userData) {
+        String requestBody = RequestBodyBuilderUtil.buildUserRequestBody(userData);
         HttpResponse<String> response = createUser(requestBody);
-        return JsonPath.read(response.body(), "$.id");
+        return JsonPath.read(response.body(), USER_ID);
     }
 
     public HttpResponse<String> getUserById(int userId) {
@@ -49,7 +51,9 @@ public class UserService {
         HttpRequest request = RequestBuilderUtil.createRequest(path, body, method, ApiConstants.BEARER_TOKEN);
         try {
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            LoggingUtils.logRequestAndResponse(LOGGER, method.name(), request.uri().toString(), body, response);
+            LOGGER.info("{} request to: {}", method.name(), request.uri());
+            LOGGER.info("Request body: {}", body != null ? body : "null");
+            LOGGER.info("Status: {}, Response: {}", response.statusCode(), response.body());
             return response;
         } catch (IOException | InterruptedException e) {
             LOGGER.error("{} request to {} failed: {}", method.name(), path, e.getMessage());
