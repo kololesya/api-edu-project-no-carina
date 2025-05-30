@@ -11,8 +11,7 @@ import com.api.constants.HttpStatus;
 import static com.api.Utils.ResponseAssertUtils.assertAllUsersContainRequiredFields;
 import static com.api.Utils.ResponseAssertUtils.assertUserDataMatches;
 import static com.api.constants.TestDataConstants.NON_EXISTENT_USER_ID;
-import static com.api.models.UserFactory.createDefaultUserDataWithRandomEmail;
-import static com.api.models.UserFactory.createInvalidUserData;
+import static com.api.models.UserFactory.*;
 import static com.api.utils.RequestBodyBuilderUtil.buildUserRequestBody;
 import static com.api.utils.RequestBodyBuilderUtil.buildUpdatedUserRequestBody;
 
@@ -52,14 +51,15 @@ public class UserTests extends BaseApiTest {
     }
 
     @Test
-    public void updateExistingUserTest() {
+    public void updateUserTest() {
         Map<String, String> originalUserData = createDefaultUserDataWithRandomEmail();
         int userId = userService.createUserAndReturnId(originalUserData);
-        String updatedRequestBody = buildUpdatedUserRequestBody(originalUserData, "Updated Name", "inactive");
+        Map<String, String> updatedUserData = createUpdatedUserData(originalUserData);
+        String updatedRequestBody = buildUpdatedUserRequestBody(originalUserData);
         HttpResponse<String> updateResponse = userService.updateUser(userId, updatedRequestBody);
         Assert.assertEquals(updateResponse.statusCode(), HttpStatus.OK.getCode(), "Expected status 200 when updating a user");
         String responseBody = updateResponse.body();
-        assertUserDataMatches(responseBody, originalUserData);
+        assertUserDataMatches(responseBody, updatedUserData);
     }
 
     @Test

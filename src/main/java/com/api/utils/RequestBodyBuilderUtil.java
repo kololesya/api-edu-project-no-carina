@@ -11,9 +11,9 @@ public class RequestBodyBuilderUtil {
         return TemplateUtils.populateTemplate(template, userData);
     }
 
-    public static String buildUpdatedUserRequestBody(Map<String, String> baseUserData, String newName, String newStatus) {
+    public static String buildUpdatedUserRequestBody(Map<String, String> baseUserData) {
         return buildUserRequestBody(
-                UserFactory.createUpdatedUserData(baseUserData, newName, newStatus)
+                UserFactory.createUpdatedUserData(baseUserData)
         );
     }
 }

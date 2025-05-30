@@ -5,6 +5,10 @@ import com.api.constants.UserTestData;
 
 import java.util.Map;
 
+
+import static com.api.constants.UserTestData.UPDATED_NAME;
+import static com.api.constants.UserTestData.UPDATED_STATUS;
+
 public class UserFactory {
 
     public static Map<String, String> createDefaultUserDataWithRandomEmail() {
@@ -25,11 +29,11 @@ public class UserFactory {
                 .build();
     }
 
-    public static Map<String, String> createUpdatedUserData(Map<String, String> original, String updatedName, String updatedStatus) {
+    public static Map<String, String> createUpdatedUserData(Map<String, String> original) {
         return new UserBuilder()
-                .withName(updatedName)
+                .withName(UPDATED_NAME)
                 .withGender(original.get("gender"))
-                .withStatus(updatedStatus)
+                .withStatus(UPDATED_STATUS)
                 .withEmail(original.get("email"))
                 .build();
     }

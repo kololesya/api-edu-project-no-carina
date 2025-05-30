@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.api.constants.JsonPathConstants.USER_ID;
+import static com.api.utils.RequestBodyBuilderUtil.buildUserRequestBody;
 
 public class UserService {
 
@@ -26,7 +27,7 @@ public class UserService {
     }
 
     public int createUserAndReturnId(Map<String, String> userData) {
-        String requestBody = RequestBodyBuilderUtil.buildUserRequestBody(userData);
+        String requestBody = buildUserRequestBody(userData);
         HttpResponse<String> response = createUser(requestBody);
         return JsonPath.read(response.body(), USER_ID);
     }
