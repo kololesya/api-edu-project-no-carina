@@ -8,7 +8,6 @@ import java.util.Map;
 public class TemplateUtils {
 
     public static String loadTemplate(String path) {
-
         try {
             return new String(Files.readAllBytes(Paths.get(path)));
         } catch (IOException e) {

@@ -5,7 +5,6 @@ import com.api.constants.UserTestData;
 
 import java.util.Map;
 
-
 import static com.api.constants.UserTestData.UPDATED_NAME;
 import static com.api.constants.UserTestData.UPDATED_STATUS;
 
