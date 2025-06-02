@@ -9,17 +9,16 @@ import org.testng.annotations.Test;
 import com.api.constants.JsonConstant;
 import com.api.models.PostFactory;
 import com.api.services.PostService;
-import com.api.services.UserService;
 import com.api.utils.TemplateUtils;
 import static com.api.constants.HttpStatus.CREATED;
+import static com.api.models.UserFactory.createDefaultUserDataWithRandomEmail;
 
-public class PostTests {
+public class PostTests extends BaseApiTest {
 
     @Test
     public void createValidPostTest() {
-
-        UserService userService = new UserService();
-        int userId = userService.createUserAndReturnId();
+        Map<String, String> originalUserData = createDefaultUserDataWithRandomEmail ();
+        int userId = userService.createUserAndReturnId(originalUserData);
         String postTemplate = TemplateUtils.loadTemplate(JsonConstant.POST_TEMPLATE_PATH);
         Map<String, String> postData = PostFactory.createPostData(userId);
         String postBody = TemplateUtils.populateTemplate(postTemplate, postData);

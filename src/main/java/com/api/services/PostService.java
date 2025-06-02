@@ -7,8 +7,8 @@ import java.net.http.HttpClient;
 
 import com.api.constants.ApiConstants;
 import com.api.constants.HttpMethod;
-import com.api.utils.LoggingUtils;
 import com.api.utils.RequestBuilderUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,12 +25,13 @@ public class PostService {
         );
         try {
             HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            LoggingUtils.logRequestAndResponse(LOGGER, "POST", request.uri().toString(), body, response);
+            LOGGER.info("POST request to: {}", request.uri());
+            LOGGER.info("Request body: {}", body != null ? body : "null");
+            LOGGER.info("Status: {}, Response: {}", response.statusCode(), response.body());
             return response;
         } catch (IOException | InterruptedException e) {
-            LOGGER.error("Request failed: {}", e.getMessage());
+            LOGGER.error("POST request to posts failed: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
-
 }
